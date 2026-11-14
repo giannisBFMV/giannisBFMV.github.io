@@ -56,3 +56,42 @@ toTop.addEventListener('click', () => {
 });
 
 document.getElementById('year').textContent = new Date().getFullYear();
+
+// Hero typewriter: every char stays in the layout (visibility only), so nothing below moves
+const cursor = Object.assign(document.createElement('span'), { className: 'cursor', textContent: '_' });
+cursor.setAttribute('aria-hidden', 'true');
+const heroH1 = document.querySelector('.hero h1');
+if (matchMedia('(prefers-reduced-motion: reduce)').matches) heroH1.append(cursor);
+else {
+  const split = el => {
+    // Screen readers get one full copy; the typed version is hidden from them
+    const sr = Object.assign(document.createElement('span'), { className: 'sr-only', textContent: el.textContent });
+    const typed = document.createElement('span');
+    typed.setAttribute('aria-hidden', 'true');
+    typed.append(...el.childNodes);
+    el.append(sr, typed);
+    const walker = document.createTreeWalker(typed, NodeFilter.SHOW_TEXT);
+    const texts = [];
+    while (walker.nextNode()) texts.push(walker.currentNode);
+    return texts.flatMap(t => {
+      const chars = [...t.data].map(c => Object.assign(document.createElement('span'), { className: 'tw', textContent: c }));
+      t.replaceWith(...chars);
+      return chars;
+    });
+  };
+  const type = (chars, ms) => new Promise(done => {
+    let i = 0;
+    const tick = () => {
+      if (i === chars.length) return done();
+      chars[i].classList.remove('tw');
+      chars[i++].after(cursor);
+      setTimeout(tick, ms);
+    };
+    tick();
+  });
+  const eyebrowChars = split(document.querySelector('.hero .eyebrow'));
+  const h1Chars = split(heroH1);
+  type(eyebrowChars, 35)
+    .then(() => new Promise(r => setTimeout(r, 250)))
+    .then(() => type(h1Chars, 70));
+}
