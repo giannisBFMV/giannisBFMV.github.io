@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-F8QJ674Y3Q"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-F8QJ674Y3Q');
+</script>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>404 – Page not found · Giannis Efthimiou</title>
+  <meta name="robots" content="noindex">
+  <meta name="theme-color" content="#f8f9fb" media="(prefers-color-scheme: light)">
+  <meta name="theme-color" content="#0f1115" media="(prefers-color-scheme: dark)">
+  <meta name="color-scheme" content="light dark">
+  <!-- Root-absolute URLs: GitHub Pages serves this file at any missing path depth -->
+  <link rel="icon" type="image/x-icon" href="/assets/img/favicon.ico">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&amp;display=swap">
+  <link rel="stylesheet" href="/css/styles.css">
+
+  <!-- Apply saved theme before first paint to avoid a flash -->
+  <script>try{var t=localStorage.getItem('theme');if(t)document.documentElement.dataset.theme=t}catch(e){}</script>
+
+  <style>
+    body { min-height: 100vh; min-height: 100dvh; display: grid; place-content: center; padding: 2rem 1rem; }
+    main { width: min(40rem, 100%); display: grid; gap: 1.5rem; justify-items: center; }
+    .term {
+      width: 100%; background: var(--surface); border: 1px solid var(--border);
+      border-radius: var(--radius); box-shadow: var(--shadow); overflow: hidden;
+    }
+    .term-bar {
+      display: flex; align-items: center; gap: .4rem; padding: .6rem .9rem;
+      border-bottom: 1px solid var(--border); color: var(--muted); font-size: .8rem;
+      i { width: .7rem; height: .7rem; border-radius: 50%; background: var(--border); }
+      span { flex: 1; text-align: center; margin-right: 2.1rem; }
+    }
+    .term pre {
+      margin: 0; padding: 1.1rem 1.2rem 1.3rem;
+      font: .95rem/1.7 ui-monospace, SFMono-Regular, Consolas, monospace;
+      white-space: pre-wrap; overflow-wrap: anywhere;
+    }
+    .p { color: var(--accent); }
+    .err { color: var(--muted); }
+    .btn {
+      display: inline-block; padding: .7rem 1.3rem; border-radius: 999px; font-weight: 600;
+      background: var(--accent); color: #fff; text-decoration: none; transition: transform .15s;
+      &:hover { transform: translateY(-2px); }
+    }
+    .links { display: flex; gap: 1.25rem; font-size: .9rem; }
+  </style>
+</head>
+<body>
+<main>
+  <h1 class="sr-only">404 – Page not found</h1>
+  <div class="term">
+    <div class="term-bar" aria-hidden="true"><i></i><i></i><i></i><span>giannis@cv: ~</span></div>
+<pre aria-hidden="true"><span class="p">giannis@cv:~$</span> cd <span class="path">this page</span>
+<span class="err">bash: cd: <span class="path">this page</span>: No such page</span>
+<span class="p">giannis@cv:~$</span> cd ~<span class="cursor">_</span></pre>
+  </div>
+  <p class="sr-only">The page you requested does not exist.</p>
+  <a class="btn" href="/">← Back to my CV</a>
+  <p class="links">
+    <a href="mailto:giannisbfmv@gmail.com">Email</a>
+    <a href="https://www.linkedin.com/in/john-efthimiou-516103243/">LinkedIn</a>
+  </p>
+</main>
+<script>
+(() => {
+  const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  let path = location.pathname;
+  try { path = decodeURIComponent(path); } catch (e) {}
+  if (path.length > 40) path = path.slice(0, 39) + '…';
+  // textContent only: the path is attacker-controllable URL text
+  document.querySelectorAll('.term .path').forEach(el => el.textContent = path);
+
+  // Typewriter: every char stays in the layout (visibility only), so the card never resizes
+  const pre = document.querySelector('.term pre');
+  const cursor = pre.querySelector('.cursor');
+  if (!reduced) {
+    cursor.remove();
+    const chars = [];
+    const walker = document.createTreeWalker(pre, NodeFilter.SHOW_TEXT);
+    const nodes = [];
+    while (walker.nextNode()) nodes.push(walker.currentNode);
+    for (const node of nodes) {
+      const frag = document.createDocumentFragment();
+      for (const ch of node.data) {
+        if (ch === '\n') { frag.append(ch); continue; }
+        const s = Object.assign(document.createElement('span'), { className: 'tw', textContent: ch });
+        frag.append(s); chars.push(s);
+      }
+      node.replaceWith(frag);
+    }
+    const ms = Math.min(30, 2000 / chars.length);
+    let i = 0;
+    const timer = setInterval(() => {
+      chars[i].classList.remove('tw');
+      chars[i++].after(cursor);
+      if (i === chars.length) clearInterval(timer);
+    }, ms);
+  }
+
+  // Cursor spotlight, same as scripts.js: transform-only updates, at most one per frame
+  if (matchMedia('(hover: hover) and (pointer: fine)').matches && !reduced) {
+    const glow = document.createElement('div');
+    glow.className = 'spotlight';
+    glow.setAttribute('aria-hidden', 'true');
+    document.body.prepend(glow);
+    let x = 0, y = 0, frame = 0;
+    addEventListener('pointermove', e => {
+      x = e.clientX; y = e.clientY;
+      if (frame) return;
+      frame = requestAnimationFrame(() => {
+        frame = 0;
+        glow.style.transform = `translate3d(${x - 300}px, ${y - 300}px, 0)`;
+        glow.classList.add('is-on');
+      });
+    }, { passive: true });
+    document.documentElement.addEventListener('pointerleave', () => glow.classList.remove('is-on'));
+  }
+})();
+</script>
+</body>
+</html>
