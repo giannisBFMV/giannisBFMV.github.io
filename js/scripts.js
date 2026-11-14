@@ -17,12 +17,18 @@ toggle.addEventListener('click', () => {
 
 // Active nav link for the section in view
 const links = new Map([...document.querySelectorAll('.nav-links a')].map(a => [a.hash.slice(1), a]));
+// The last section is too short to reach the observer band, so the bottom of the page claims it
+const atBottom = () => innerHeight + scrollY >= root.scrollHeight - 2;
+let inView = null;
+const markActive = () => {
+  const a = atBottom() ? [...links.values()].pop() : links.get(inView);
+  if (!a) return;
+  links.forEach(l => l.removeAttribute('aria-current'));
+  a.setAttribute('aria-current', 'true');
+};
 const navObserver = new IntersectionObserver(entries => {
-  for (const e of entries) {
-    if (!e.isIntersecting) continue;
-    links.forEach(a => a.removeAttribute('aria-current'));
-    links.get(e.target.id)?.setAttribute('aria-current', 'true');
-  }
+  for (const e of entries) if (e.isIntersecting) inView = e.target.id;
+  markActive();
 }, { rootMargin: '-45% 0px -50% 0px' });
 document.querySelectorAll('main section[id]').forEach(s => navObserver.observe(s));
 
@@ -36,7 +42,7 @@ document.querySelectorAll('.reveal').forEach(el => revealObserver.observe(el));
 
 // Back to top
 const toTop = document.querySelector('.to-top');
-const onScroll = () => { toTop.hidden = scrollY < 400; };
+const onScroll = () => { toTop.hidden = scrollY < 400; markActive(); };
 addEventListener('scroll', onScroll, { passive: true });
 onScroll();
 toTop.addEventListener('click', () => {
