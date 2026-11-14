@@ -91,7 +91,6 @@ else {
   });
   const eyebrowChars = split(document.querySelector('.hero .eyebrow'));
   const h1Chars = split(heroH1);
-  type(eyebrowChars, 35)
-    .then(() => new Promise(r => setTimeout(r, 250)))
-    .then(() => type(h1Chars, 70));
+  type(eyebrowChars, 1000 / eyebrowChars.length) // ~1s each part, whatever the text length
+    .then(() => type(h1Chars, 1000 / h1Chars.length));
 }
