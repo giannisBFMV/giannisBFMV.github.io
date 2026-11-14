@@ -9,10 +9,23 @@ const syncToggle = () => toggle.setAttribute('aria-pressed', String(isDark()));
 syncToggle();
 dark.addEventListener('change', syncToggle);
 toggle.addEventListener('click', () => {
-  const next = isDark() ? 'light' : 'dark';
-  root.dataset.theme = next;
-  try { localStorage.setItem('theme', next); } catch (e) {}
-  syncToggle();
+  const apply = () => {
+    const next = isDark() ? 'light' : 'dark';
+    root.dataset.theme = next;
+    try { localStorage.setItem('theme', next); } catch (e) {}
+    syncToggle();
+  };
+  if (!document.startViewTransition || matchMedia('(prefers-reduced-motion: reduce)').matches) return apply();
+  // Circle reveal of the new theme from the toggle's centre
+  const b = toggle.getBoundingClientRect();
+  const x = b.left + b.width / 2, y = b.top + b.height / 2;
+  const r = Math.hypot(Math.max(x, innerWidth - x), Math.max(y, innerHeight - y));
+  document.startViewTransition(apply).ready.then(() => {
+    root.animate(
+      { clipPath: [`circle(0px at ${x}px ${y}px)`, `circle(${r}px at ${x}px ${y}px)`] },
+      { duration: 500, easing: 'ease-out', pseudoElement: '::view-transition-new(root)' }
+    );
+  }).catch(() => {}); // ready rejects if skipped (e.g. rapid clicks); apply() still runs
 });
 
 // Active nav link for the section in view

@@ -186,6 +186,9 @@ h1 { font-size: clamp(2.4rem, 1.6rem + 4vw, 4rem); font-weight: 800; letter-spac
   * { transition: none !important; }
 }
 
+/* Theme toggle circle reveal: JS clips the new snapshot, so drop the default crossfade */
+::view-transition-old(root), ::view-transition-new(root) { animation: none; mix-blend-mode: normal; }
+
 /* Print: clean black-on-white CV */
 @media print {
   :root, :root:not([data-theme="light"]), :root[data-theme="dark"] {
