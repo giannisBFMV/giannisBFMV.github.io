@@ -16,23 +16,8 @@ toggle.addEventListener('click', () => {
     syncToggle();
   };
   if (!document.startViewTransition || matchMedia('(prefers-reduced-motion: reduce)').matches) return apply();
-  // Circle reveal from the toggle's centre: light grows outward, dark closes inward
-  const b = toggle.getBoundingClientRect();
-  const x = b.left + b.width / 2, y = b.top + b.height / 2;
-  const r = Math.hypot(Math.max(x, innerWidth - x), Math.max(y, innerHeight - y));
-  const inward = !isDark();
-  const clip = [`circle(0px at ${x}px ${y}px)`, `circle(${r}px at ${x}px ${y}px)`];
-  if (inward) root.dataset.reveal = 'in'; // CSS lifts the old snapshot above the new one
-  const t = document.startViewTransition(apply);
-  t.ready.then(() => {
-    root.animate(
-      { clipPath: inward ? clip.reverse() : clip },
-      inward
-        ? { duration: 500, easing: 'ease-out', fill: 'forwards', pseudoElement: '::view-transition-old(root)' }
-        : { duration: 500, easing: 'ease-out', fill: 'forwards', pseudoElement: '::view-transition-new(root)' }
-    );
-  }).catch(() => {}); // ready rejects if skipped (e.g. rapid clicks); apply() still runs
-  t.finished.catch(() => {}).finally(() => delete root.dataset.reveal);
+  // Fade + zoom lives in CSS; ready rejects when a rapid click skips the transition
+  document.startViewTransition(apply).ready.catch(() => {});
 });
 
 // Active nav link for the section in view
