@@ -1,60 +1,47 @@
-/*!
-* Start Bootstrap - Resume v7.0.5 (https://startbootstrap.com/theme/resume)
-* Copyright 2013-2022 Start Bootstrap
-* Licensed under MIT (https://github.com/StartBootstrap/startbootstrap-resume/blob/master/LICENSE)
-*/
-//
-// Scripts
-// 
+const root = document.documentElement;
+root.classList.add('js');
 
-window.addEventListener('DOMContentLoaded', event => {
-
-    // Activate Bootstrap scrollspy on the main nav element
-    const sideNav = document.body.querySelector('#sideNav');
-    if (sideNav) {
-        new bootstrap.ScrollSpy(document.body, {
-            target: '#sideNav',
-            offset: 74,
-        });
-    };
-
-    // Collapse responsive navbar when toggler is visible
-    const navbarToggler = document.body.querySelector('.navbar-toggler');
-    const responsiveNavItems = [].slice.call(
-        document.querySelectorAll('#navbarResponsive .nav-link')
-    );
-    responsiveNavItems.map(function (responsiveNavItem) {
-        responsiveNavItem.addEventListener('click', () => {
-            if (window.getComputedStyle(navbarToggler).display !== 'none') {
-                navbarToggler.click();
-            }
-        });
-    });
-    // scroll up button 
-//Get the button
-let mybutton = document.getElementById("btn-back-to-top");
-
-// When the user scrolls down 20px from the top of the document, show the button
-window.onscroll = function () {
-  scrollFunction();
-};
-
-function scrollFunction() {
-  if (
-    document.body.scrollTop > 20 ||
-    document.documentElement.scrollTop > 20
-  ) {
-    mybutton.style.display = "block";
-  } else {
-    mybutton.style.display = "none";
-  }
-}
-// When the user clicks on the button, scroll to the top of the document
-mybutton.addEventListener("click", backToTop);
-
-function backToTop() {
-  document.body.scrollTop = 0;
-  document.documentElement.scrollTop = 0;
-}
-
+// Theme toggle: flips the effective theme and remembers the choice
+const dark = matchMedia('(prefers-color-scheme: dark)');
+const isDark = () => (root.dataset.theme || (dark.matches ? 'dark' : 'light')) === 'dark';
+const toggle = document.querySelector('.theme-toggle');
+const syncToggle = () => toggle.setAttribute('aria-pressed', String(isDark()));
+syncToggle();
+dark.addEventListener('change', syncToggle);
+toggle.addEventListener('click', () => {
+  const next = isDark() ? 'light' : 'dark';
+  root.dataset.theme = next;
+  try { localStorage.setItem('theme', next); } catch (e) {}
+  syncToggle();
 });
+
+// Active nav link for the section in view
+const links = new Map([...document.querySelectorAll('.nav-links a')].map(a => [a.hash.slice(1), a]));
+const navObserver = new IntersectionObserver(entries => {
+  for (const e of entries) {
+    if (!e.isIntersecting) continue;
+    links.forEach(a => a.removeAttribute('aria-current'));
+    links.get(e.target.id)?.setAttribute('aria-current', 'true');
+  }
+}, { rootMargin: '-45% 0px -50% 0px' });
+document.querySelectorAll('main section[id]').forEach(s => navObserver.observe(s));
+
+// Scroll reveal (CSS only hides .reveal when motion is allowed)
+const revealObserver = new IntersectionObserver(entries => {
+  for (const e of entries) {
+    if (e.isIntersecting) { e.target.classList.add('is-visible'); revealObserver.unobserve(e.target); }
+  }
+}, { rootMargin: '0px 0px -10% 0px' });
+document.querySelectorAll('.reveal').forEach(el => revealObserver.observe(el));
+
+// Back to top
+const toTop = document.querySelector('.to-top');
+const onScroll = () => { toTop.hidden = scrollY < 400; };
+addEventListener('scroll', onScroll, { passive: true });
+onScroll();
+toTop.addEventListener('click', () => {
+  scrollTo({ top: 0 });
+  document.querySelector('.brand').focus({ preventScroll: true });
+});
+
+document.getElementById('year').textContent = new Date().getFullYear();
