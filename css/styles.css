@@ -187,6 +187,20 @@ h1 { font-size: clamp(2.4rem, 1.6rem + 4vw, 4rem); font-weight: 800; letter-spac
   &[hidden] { display: none; }
 }
 
+/* Cursor spotlight (created by JS on fine pointers only). z-index -1 sits above the canvas
+   (body background) but below all in-flow content, so it never covers text or takes clicks */
+.spotlight {
+  --glow: 10%;
+  position: fixed; top: 0; left: 0; z-index: -1;
+  width: 600px; height: 600px; border-radius: 50%;
+  pointer-events: none; will-change: transform;
+  background: radial-gradient(circle, color-mix(in srgb, var(--accent) var(--glow), transparent), transparent 70%);
+  opacity: 0; transition: opacity .4s ease;
+  &.is-on { opacity: 1; }
+}
+:root[data-theme="dark"] .spotlight { --glow: 15%; }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .spotlight { --glow: 15%; } }
+
 /* Scroll reveal: only when JS has run and motion is welcome */
 @media (prefers-reduced-motion: no-preference) {
   .js .reveal { opacity: 0; transform: translateY(12px); transition: opacity .5s ease, transform .5s ease; }
@@ -214,7 +228,7 @@ h1 { font-size: clamp(2.4rem, 1.6rem + 4vw, 4rem); font-weight: 800; letter-spac
   }
   @page { margin: 1.4cm; }
   body { font-size: 10.5pt; line-height: 1.45; }
-  .site-header, .skip-link, .to-top, .socials, .project .link { display: none !important; }
+  .site-header, .skip-link, .to-top, .spotlight, .socials, .project .link { display: none !important; }
   main { max-width: none; padding: 0; }
   section { padding: 1rem 0; border: 0; break-inside: avoid; }
   h2 { font-size: 14pt; margin-bottom: .5rem; border-bottom: 1px solid #000; padding-bottom: .2rem; }

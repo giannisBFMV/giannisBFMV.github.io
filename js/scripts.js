@@ -94,3 +94,22 @@ else {
   type(eyebrowChars, 1000 / eyebrowChars.length) // ~1s each part, whatever the text length
     .then(() => type(h1Chars, 1000 / h1Chars.length));
 }
+
+// Cursor spotlight: transform-only updates (compositor), at most one per frame
+if (matchMedia('(hover: hover) and (pointer: fine)').matches && !matchMedia('(prefers-reduced-motion: reduce)').matches) {
+  const glow = document.createElement('div');
+  glow.className = 'spotlight';
+  glow.setAttribute('aria-hidden', 'true');
+  document.body.prepend(glow);
+  let x = 0, y = 0, frame = 0;
+  addEventListener('pointermove', e => {
+    x = e.clientX; y = e.clientY;
+    if (frame) return;
+    frame = requestAnimationFrame(() => {
+      frame = 0;
+      glow.style.transform = `translate3d(${x - 300}px, ${y - 300}px, 0)`;
+      glow.classList.add('is-on');
+    });
+  }, { passive: true });
+  document.documentElement.addEventListener('pointerleave', () => glow.classList.remove('is-on'));
+}
