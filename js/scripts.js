@@ -28,7 +28,7 @@ toggle.addEventListener('click', () => {
     root.animate(
       { clipPath: inward ? clip.reverse() : clip },
       inward
-        ? { duration: 500, easing: 'ease-in', fill: 'forwards', pseudoElement: '::view-transition-old(root)' }
+        ? { duration: 500, easing: 'ease-out', fill: 'forwards', pseudoElement: '::view-transition-old(root)' }
         : { duration: 500, easing: 'ease-out', fill: 'forwards', pseudoElement: '::view-transition-new(root)' }
     );
   }).catch(() => {}); // ready rejects if skipped (e.g. rapid clicks); apply() still runs
